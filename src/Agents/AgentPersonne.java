@@ -9,7 +9,10 @@ public class AgentPersonne extends Agent {
     private String nom;
     private String comportement;
 
-    public AgentPersonne(){}
+    public AgentPersonne(){
+        this.tentatives = 0 ;
+        this.comportement = "demande de reservation";
+    }
 
     public void envoyerDemande(){}
     public void recevoirReponse(){}

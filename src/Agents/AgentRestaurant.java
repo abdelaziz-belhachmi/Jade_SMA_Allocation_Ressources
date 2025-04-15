@@ -5,11 +5,14 @@ import jade.core.Agent;
 public class AgentRestaurant extends Agent {
 
     private int id;
-    private int capaciteMax;
+    private final int capaciteMax;
     private int placesLibres;
-    private String nom;
+    private final String nom;
 
-    public AgentRestaurant() {}
+    public AgentRestaurant(int capaciteMax, String nom) {
+        this.capaciteMax = capaciteMax;
+        this.nom = nom;
+    }
 
     public AgentRestaurant(String nom, int capaciteMax, int placesLibres) {
         this.nom = nom;

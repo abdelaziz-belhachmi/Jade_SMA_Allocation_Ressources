@@ -6,10 +6,11 @@ public class AgentPersonne extends Agent {
 
     private int id;
     private int tentatives;
-    private String nom;
-    private String comportement;
+    private final String nom;
+    private final String comportement;
 
-    public AgentPersonne(){
+    public AgentPersonne(String nom){
+        this.nom = nom;
         this.tentatives = 0 ;
         this.comportement = "demande de reservation";
     }

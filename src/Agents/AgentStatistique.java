@@ -37,6 +37,7 @@ public class AgentStatistique extends Agent {
     }
 
 
+
     @Override
     protected void setup() {
         System.out.println("Hello! My name is " + getLocalName());

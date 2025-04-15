@@ -1,15 +1,18 @@
 package Agents;
 
+import jade.core.AID;
 import jade.core.Agent;
 
 public class AgentRestaurant extends Agent {
 
-    private int id;
+    private AID id;
     private final int capaciteMax;
     private int placesLibres;
     private final String nom;
 
     public AgentRestaurant(int capaciteMax, String nom) {
+        this.id = this.getAID();
+
         this.capaciteMax = capaciteMax;
         this.nom = nom;
     }

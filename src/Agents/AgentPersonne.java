@@ -1,15 +1,17 @@
 package Agents;
 
+import jade.core.AID;
 import jade.core.Agent;
 
 public class AgentPersonne extends Agent {
 
-    private int id;
+    private AID id;
     private int tentatives;
     private final String nom;
     private final String comportement;
 
     public AgentPersonne(String nom){
+        this.id = this.getAID();
         this.nom = nom;
         this.tentatives = 0 ;
         this.comportement = "demande de reservation";

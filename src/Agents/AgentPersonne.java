@@ -7,14 +7,12 @@ public class AgentPersonne extends Agent {
 
     private AID id;
     private int tentatives;
-    private final String nom;
-    private final String comportement;
+    private String nom;
+    private String comportement;
 
-    public AgentPersonne(String nom){
-        this.id = this.getAID();
-        this.nom = nom;
+    public AgentPersonne(){
         this.tentatives = 0 ;
-        this.comportement = "demande de reservation";
+        this.comportement = "Demande de reservation";
     }
 
     public void envoyerDemande(){}
@@ -24,6 +22,21 @@ public class AgentPersonne extends Agent {
 
     @Override
     protected void setup() {
-        System.out.println("Hello! My name is " + getLocalName());
+        this.id = this.getAID();
+        this.nom = this.getAID().getLocalName();
+        System.out.println(this);
+    }
+
+    @Override
+    protected void takeDown() {
+        super.takeDown();
+        System.out.println("sending stats to agent stat before destruction...");
+        /**/
+        System.out.println("Done");
+    }
+
+    @Override
+    public String toString() {
+        return "Hi I am  "+this.nom + " and my Comportement is :" + this.comportement;
     }
 }

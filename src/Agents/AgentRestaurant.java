@@ -8,23 +8,17 @@ public class AgentRestaurant extends Agent {
     private AID id;
     private final int capaciteMax;
     private int placesLibres;
-    private final String nom;
-
-    public AgentRestaurant(int capaciteMax, String nom) {
-        this.id = this.getAID();
-
-        this.capaciteMax = capaciteMax;
-        this.nom = nom;
-    }
-
-    public AgentRestaurant(String nom, int capaciteMax, int placesLibres) {
-        this.nom = nom;
-        this.capaciteMax = capaciteMax;
-        this.placesLibres = placesLibres;
-    }
+    private String nom;
 
     @Override
     protected void setup() {
-        System.out.println("Hello! My name is " + getLocalName());
+        this.id = this.getAID();
+        System.out.println("Hello! My name is " + getLocalName() + "and my Max Capacity is " + capaciteMax);
     }
+
+    public AgentRestaurant() {
+        this.capaciteMax = 10;
+    }
+
+
 }

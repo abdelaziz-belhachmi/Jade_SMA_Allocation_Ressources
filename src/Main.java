@@ -19,7 +19,6 @@ public class Main {
         Profile profile = new ProfileImpl(prop);
         AgentContainer mainContainer = rt.createMainContainer(profile);
 
-
         mainContainer.start();
 
     } catch (Exception e) {

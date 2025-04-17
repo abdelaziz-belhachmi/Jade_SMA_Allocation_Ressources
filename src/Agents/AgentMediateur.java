@@ -8,6 +8,18 @@ import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.ControllerException;
 import jade.wrapper.ContainerController;
+import jade.core.ProfileImpl;
+import jade.core.AgentContainer;
+import jade.wrapper.AgentController;
+import jade.core.AMS;
+import jade.core.PlatformException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.FIPAAgentManagementException;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAAgentManagement.Property;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+
 
 import java.util.*;
 
@@ -31,28 +43,29 @@ public class AgentMediateur extends Agent {
         this.fileDemandes.add(demande);
     }
 
-    // Method to dynamically fetch all restaurant agents from the container (assuming they are predefined or created manually)
-    // Method to dynamically fetch all restaurant agents from the container
+    // Method to dynamically fetch all restaurant agents from the container by type
     private List<AID> getRestaurantAgents() {
         List<AID> restaurantAIDs = new ArrayList<>();
-        try {
-            // Assuming the container is running on the same host
-            jade.core.Runtime runtime = jade.core.Runtime.instance();
-            jade.wrapper.AgentContainer restaurantContainer = runtime.getAgentContainer("Restaurant-Container");
 
-            // Get all agents of type AgentRestaurant
-            for (AID restaurant : restaurantContainer.getAgentNames()) {
-                if (restaurant.getLocalName().startsWith("Restaurant")) {
-                    restaurantAIDs.add(restaurant);
-                }
+        try {
+            // Use the AMS (Agent Management System) to query all agents by type
+            DFAgentDescription template = new DFAgentDescription();
+            ServiceDescription sd = new ServiceDescription();
+            sd.setType("Restaurant");
+            template.addServices(sd);
+            DFAgentDescription[] result = DFService.search(this, template);
+
+            for (DFAgentDescription agentDescription : result) {
+                AID restaurantAID = agentDescription.getName();
+                restaurantAIDs.add(restaurantAID);
             }
-        } catch (Exception e) {
+
+        } catch (FIPAAgentManagementException e) {
             e.printStackTrace();
         }
 
         return restaurantAIDs;
     }
-
 
     // Try to reserve a seat at any restaurant from the dynamically fetched list
     private boolean handleReservation(AID personneAgent) {

@@ -82,6 +82,13 @@ public class AgentPersonne extends Agent {
 //                        doDelete();  // Delete the agent after 3 attempts
 //                    }
 
+                    try {
+                        Thread.sleep((int) ((Math.random() * (1000 - 500 + 1)) + 500));  // Sleep for 500 ms before retrying
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    //
+
                 }
             }
         });

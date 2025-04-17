@@ -3,9 +3,12 @@ package Agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
@@ -13,15 +16,13 @@ import java.util.*;
 
 public class AgentMediateur extends Agent {
 
-    private List<AID> listeRestaurants = null;  // List of Restaurant AIDs
-    private Queue<Object> fileDemandes;  // Queue to handle incoming requests
+    private List<AID> listeRestaurants = null;
+    private ConcurrentLinkedQueue<AID> fileDemandes; // Concurrent queue for managing requests
 
     public AgentMediateur() {
-        this.fileDemandes = new LinkedList<>();
-//        this.listeRestaurants = new ArrayList<>(); // just initialize empty here
+        this.fileDemandes = new ConcurrentLinkedQueue<>();
     }
 
-    // Method to dynamically fetch all restaurant agents from the container by type
     private List<AID> getRestaurantAgents() {
         List<AID> restaurantAIDs = new ArrayList<>();
 
@@ -41,24 +42,18 @@ public class AgentMediateur extends Agent {
         } catch (FIPAException e) {
             e.printStackTrace();
         }
-
         return restaurantAIDs;
     }
 
     private boolean handleReservation(AID personneAgent) {
         boolean resSuccess = false;
 
-        if (this.listeRestaurants == null){
+        if (this.listeRestaurants == null) {
             this.listeRestaurants = getRestaurantAgents(); // fetch latest list
         }
-        int numITR = 0;
-        System.out.println(" i will start trying reserving in restos ");
 
         for (AID restaurant : listeRestaurants) {
-            numITR++;
-            System.out.println("**" + numITR + "** trying reserving in resto : " + restaurant.getLocalName());
             if (requestRestaurantReservation(personneAgent, restaurant)) {
-                System.out.println("successful reservation");
                 resSuccess = true;
                 break;
             }
@@ -99,19 +94,30 @@ public class AgentMediateur extends Agent {
                 ACLMessage msg = receive();
                 if (msg != null && msg.getContent().equals("request-reservation")) {
                     AID sender = msg.getSender();
+                    fileDemandes.add(sender);  // Add the Personne agent to the request queue
 
-                    boolean reservationSuccess = handleReservation(sender);
+                    // Process each request concurrently using a worker thread
+                    addBehaviour(new OneShotBehaviour() {
+                        @Override
+                        public void action() {
+                            AID personneAgent = fileDemandes.poll();  // Fetch next request from the queue
+                            if (personneAgent != null) {
+                                boolean reservationSuccess = handleReservation(personneAgent);
+                                System.out.println("Mediateur reservation status: " + reservationSuccess);
 
-                    System.out.println("mediateur reservation status : " + reservationSuccess);
-                    ACLMessage reply = msg.createReply();
-                    if (reservationSuccess) {
-                        reply.setPerformative(ACLMessage.AGREE);
-                        reply.setContent("Reservation confirmed");
-                    } else {
-                        reply.setPerformative(ACLMessage.REFUSE);
-                        reply.setContent("Reservation failed");
-                    }
-                    send(reply);
+                                ACLMessage reply = msg.createReply();
+                                if (reservationSuccess) {
+                                    reply.setPerformative(ACLMessage.AGREE);
+                                    reply.setContent("Reservation confirmed");
+                                    send(reply);
+                                } else {
+                                    reply.setPerformative(ACLMessage.REFUSE);
+                                    reply.setContent("Reservation failed");
+                                    send(reply);
+                                }
+                            }
+                        }
+                    });
                 } else {
                     block();
                 }

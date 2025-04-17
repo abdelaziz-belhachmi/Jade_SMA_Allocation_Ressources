@@ -52,21 +52,28 @@ public class AgentPersonne extends Agent {
         addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
+                ACLMessage response = null;
                 // Simulate trying to send a reservation request after some number of attempts
-                if (tentatives < 3) {  // Limit the number of attempts
+                while (response == null || response.getPerformative() != ACLMessage.AGREE) {  // Limit the number of attempts
                     envoyerDemande();  // Send the request
 
                     // Wait for the response
-                    ACLMessage response = recevoirReponse();
+                    response = recevoirReponse();
 
                     // After receiving the response, notify the Mediateur (if needed)
                     boolean reservationStatus = (response != null && response.getPerformative() == ACLMessage.AGREE);
                     notifierMediateur(reservationStatus);
 
                     tentatives++;  // Increment the attempt counter
-                } else {
-                    System.out.println(nom + " has made 3 reservation attempts. No further action will be taken.");
-                    doDelete();  // Delete the agent after 3 attempts
+
+                    if (reservationStatus){
+                        break;
+                    }
+//                    else {
+//                        System.out.println(nom + " has made 3 reservation attempts. No further action will be taken.");
+//                        doDelete();  // Delete the agent after 3 attempts
+//                    }
+
                 }
             }
         });

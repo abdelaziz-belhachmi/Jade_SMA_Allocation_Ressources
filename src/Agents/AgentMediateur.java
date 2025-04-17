@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.*;
 
@@ -68,18 +69,22 @@ public class AgentMediateur extends Agent {
         msg.setContent("reserve");
         send(msg);
 
-        ACLMessage response = blockingReceive();
+//        ACLMessage response = blockingReceive();
+        MessageTemplate mt = MessageTemplate.MatchSender(restaurant);
+        ACLMessage response = blockingReceive(mt, 2000);  // add a timeout too
+
+
         if (response != null && response.getPerformative() == ACLMessage.AGREE) {
-            ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
-            reply.addReceiver(personneAgent);
-            reply.setContent("Reservation accepted at " + restaurant.getLocalName());
-            send(reply);
+//            ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
+//            reply.addReceiver(personneAgent);
+//            reply.setContent("Reservation accepted at " + restaurant.getLocalName());
+//            send(reply);
             return true;
         } else {
-            ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
-            reply.addReceiver(personneAgent);
-            reply.setContent("Reservation rejected by " + restaurant.getLocalName());
-            send(reply);
+//            ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
+//            reply.addReceiver(personneAgent);
+//            reply.setContent("Reservation rejected by " + restaurant.getLocalName());
+//            send(reply);
             return false;
         }
     }

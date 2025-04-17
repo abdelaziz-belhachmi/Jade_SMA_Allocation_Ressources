@@ -19,6 +19,7 @@ public class RestaurantContainer {
             AgentContainer ac = rt.createAgentContainer(profile);
 
             for (int i = 1; i <= numberOfRestaurants; i++) {
+                // It's important that each restaurant agent's name starts with "Restaurant" so that it can be dynamically identified and communicated with.
                 ac.createNewAgent("Restaurant-"+i,"Agents.AgentRestaurant",new Object[]{i*2}).start();
             }
 

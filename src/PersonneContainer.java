@@ -5,7 +5,7 @@ import jade.wrapper.ControllerException;
 
 public class PersonneContainer {
 
-    private static int numberOfPersonnes = 5;
+    private static int numberOfPersonnes = 20;
 
     public static void main(String[] args) {
         try {

@@ -3,6 +3,7 @@ package Agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class AgentPersonne extends Agent {
@@ -12,7 +13,7 @@ public class AgentPersonne extends Agent {
     private String nom;  // The agent's name
     private String comportement;  // Behavior description
 
-    public AgentPersonne() {
+    public AgentPersonne() throws InterruptedException {
         this.tentatives = 0;
         this.comportement = "Demande de reservation";
     }
@@ -49,20 +50,26 @@ public class AgentPersonne extends Agent {
         System.out.println(this);
 
         // Add a behavior to send the reservation request and handle responses
-        addBehaviour(new CyclicBehaviour() {
+        addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
                 ACLMessage response = null;
                 // Simulate trying to send a reservation request after some number of attempts
-                while (response == null || response.getPerformative() != ACLMessage.AGREE) {  // Limit the number of attempts
+                while (response == null || response.getPerformative() == ACLMessage.REFUSE) {  // Limit the number of attempts
                     envoyerDemande();  // Send the request
 
                     // Wait for the response
                     response = recevoirReponse();
-
+                    System.out.println("hello ? responce got is "+response.getPerformative());
                     // After receiving the response, notify the Mediateur (if needed)
                     boolean reservationStatus = (response != null && response.getPerformative() == ACLMessage.AGREE);
-                    notifierMediateur(reservationStatus);
+                    // notifierMediateur(reservationStatus);
 
                     tentatives++;  // Increment the attempt counter
 

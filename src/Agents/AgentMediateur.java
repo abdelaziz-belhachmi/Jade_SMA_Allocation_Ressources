@@ -9,27 +9,16 @@ import jade.lang.acl.ACLMessage;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-
 import java.util.*;
 
 public class AgentMediateur extends Agent {
 
-    List<AID> listeRestaurants;  // List of Restaurant AIDs
-    Queue<Object> fileDemandes;  // Queue to handle incoming requests
+    private List<AID> listeRestaurants;  // List of Restaurant AIDs
+    private Queue<Object> fileDemandes;  // Queue to handle incoming requests
 
     public AgentMediateur() {
-        this.listeRestaurants = new LinkedList<AID>();
-        this.fileDemandes = new LinkedList<Object>();
-    }
-
-    public AgentMediateur(List<AID> listeRestaurants) {
-        this.listeRestaurants = listeRestaurants;
-        this.fileDemandes = new LinkedList<Object>();
-    }
-
-    // Method to receive a reservation request
-    public void recevoirDemande(Object demande) {
-        this.fileDemandes.add(demande);
+        this.fileDemandes = new LinkedList<>();
+        this.listeRestaurants = new ArrayList<>(); // just initialize empty here
     }
 
     // Method to dynamically fetch all restaurant agents from the container by type
@@ -37,7 +26,6 @@ public class AgentMediateur extends Agent {
         List<AID> restaurantAIDs = new ArrayList<>();
 
         try {
-            // Use the AMS (Agent Management System) to query all agents by type
             DFAgentDescription template = new DFAgentDescription();
             ServiceDescription sd = new ServiceDescription();
             sd.setType("Restaurant");
@@ -46,82 +34,82 @@ public class AgentMediateur extends Agent {
 
             for (DFAgentDescription agentDescription : result) {
                 AID restaurantAID = agentDescription.getName();
+                System.out.println(" found a restaurant, its name: **{ " + restaurantAID + " }**");
                 restaurantAIDs.add(restaurantAID);
             }
 
         } catch (FIPAException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         return restaurantAIDs;
     }
 
-    // Try to reserve a seat at any restaurant from the dynamically fetched list
     private boolean handleReservation(AID personneAgent) {
-        // Dynamically fetch the list of restaurant agents
-        List<AID> restaurantList = getRestaurantAgents();
+        this.listeRestaurants = getRestaurantAgents(); // fetch latest list
 
-        // Loop through the restaurants and try to make a reservation
-        for (AID restaurant : restaurantList) {
+        int numITR = 0;
+        System.out.println(" i will start trying reserving in restos ");
+
+        for (AID restaurant : listeRestaurants) {
+            numITR++;
+            System.out.println("**" + numITR + "** trying reserving in resto : " + restaurant.getLocalName());
             if (requestRestaurantReservation(personneAgent, restaurant)) {
-                return true;  // Reservation successful
+                System.out.println("successful reservation");
+                return true;
             }
         }
-        return false; // No restaurants could accept the reservation
+
+        return false;
     }
 
-    // Request a reservation from a specific restaurant
     private boolean requestRestaurantReservation(AID personneAgent, AID restaurant) {
         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
         msg.addReceiver(restaurant);
         msg.setContent("reserve");
-
-        // Send the request to the restaurant
         send(msg);
 
-        // Wait for the restaurant's response
         ACLMessage response = blockingReceive();
         if (response != null && response.getPerformative() == ACLMessage.AGREE) {
-            // Notify the "personne" agent if the reservation was successful
-            ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+            ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
             reply.addReceiver(personneAgent);
             reply.setContent("Reservation accepted at " + restaurant.getLocalName());
             send(reply);
-            return true;  // Reservation was successful
+            return true;
         } else {
-            // Notify the "personne" agent if the reservation was rejected
-            ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
+            ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
             reply.addReceiver(personneAgent);
             reply.setContent("Reservation rejected by " + restaurant.getLocalName());
             send(reply);
-            return false;  // Reservation was rejected
+            return false;
         }
     }
 
     @Override
     protected void setup() {
-        // Add a cyclic behaviour to handle multiple requests
+        System.out.println(getLocalName() + " is ready and waiting for requests...");
+
         addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                // Receive the reservation request from a "personne" agent
                 ACLMessage msg = receive();
                 if (msg != null && msg.getContent().equals("request-reservation")) {
-                    AID sender = msg.getSender();  // The "personne" agent who made the request
+                    AID sender = msg.getSender();
 
-                    // Process the reservation request
                     boolean reservationSuccess = handleReservation(sender);
 
-                    // Respond to the "personne" agent
+                    System.out.println("mediateur reservation status : " + reservationSuccess);
                     ACLMessage reply = msg.createReply();
                     if (reservationSuccess) {
-                        reply.setPerformative(ACLMessage.AGREE);  // Reservation accepted
+                        reply.setPerformative(ACLMessage.AGREE);
                         reply.setContent("Reservation confirmed");
                     } else {
-                        reply.setPerformative(ACLMessage.REFUSE);  // Reservation rejected
+                        reply.setPerformative(ACLMessage.REFUSE);
                         reply.setContent("Reservation failed");
                     }
-                    send(reply);  // Send the response back to the "personne" agent
+                    send(reply);
+                } else {
+                    block();
                 }
             }
         });

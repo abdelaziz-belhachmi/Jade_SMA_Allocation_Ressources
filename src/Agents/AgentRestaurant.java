@@ -3,6 +3,10 @@ package Agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
 public class AgentRestaurant extends Agent {
@@ -14,6 +18,23 @@ public class AgentRestaurant extends Agent {
 
     @Override
     protected void setup() {
+        this.nom = getLocalName(); // Set restaurant name
+
+        // Register this restaurant in the Directory Facilitator (DF)
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(getAID());
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("Restaurant"); // This must match the search type in AgentMediateur
+        sd.setName(getLocalName());
+        dfd.addServices(sd);
+        try {
+            DFService.register(this, dfd);
+            System.out.println(getLocalName() + " registered in DF as Restaurant.");
+        } catch (FIPAException fe) {
+            fe.printStackTrace();
+        }
+
+
         capaciteMax = getRandomNumber(10, 15);  // Random capacity between 10-15
         placesLibres = getRandomNumber(2, Math.min(6, capaciteMax));  // Random available seats, ensuring it's <= capaciteMax
         System.out.println(getLocalName() + " initialized with " + placesLibres + " available seats and max capacity of: " + capaciteMax);

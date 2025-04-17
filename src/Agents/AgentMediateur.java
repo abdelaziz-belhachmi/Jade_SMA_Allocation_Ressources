@@ -3,22 +3,11 @@ package Agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
-import jade.core.Runtime;
-import jade.wrapper.AgentContainer;
-import jade.wrapper.ControllerException;
-import jade.wrapper.ContainerController;
-import jade.core.ProfileImpl;
-import jade.core.AgentContainer;
-import jade.wrapper.AgentController;
-import jade.core.AMS;
-import jade.core.PlatformException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.FIPAAgentManagementException;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.domain.FIPAAgentManagement.Property;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
 
 
 import java.util.*;
@@ -60,8 +49,8 @@ public class AgentMediateur extends Agent {
                 restaurantAIDs.add(restaurantAID);
             }
 
-        } catch (FIPAAgentManagementException e) {
-            e.printStackTrace();
+        } catch (FIPAException e) {
+            throw new RuntimeException(e);
         }
 
         return restaurantAIDs;

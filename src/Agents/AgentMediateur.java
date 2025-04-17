@@ -75,12 +75,15 @@ public class AgentMediateur extends Agent {
 
 
         if (response != null && response.getPerformative() == ACLMessage.AGREE) {
+            // replace this code with sending to statistic agent to log stats
 //            ACLMessage reply = new ACLMessage(ACLMessage.AGREE);
 //            reply.addReceiver(personneAgent);
 //            reply.setContent("Reservation accepted at " + restaurant.getLocalName());
 //            send(reply);
             return true;
         } else {
+            // replace this code with sending to statistic agent to log stats
+            
 //            ACLMessage reply = new ACLMessage(ACLMessage.REFUSE);
 //            reply.addReceiver(personneAgent);
 //            reply.setContent("Reservation rejected by " + restaurant.getLocalName());

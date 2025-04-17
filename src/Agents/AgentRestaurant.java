@@ -20,6 +20,13 @@ public class AgentRestaurant extends Agent {
     protected void setup() {
         this.nom = getLocalName(); // Set restaurant name
 
+        try {
+            // Clean any previous DF entry (in case of restart)
+            DFService.deregister(this);
+        } catch (Exception ignore) {
+            // Can safely ignore: no registration yet
+        }
+
         // Register this restaurant in the Directory Facilitator (DF)
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
@@ -52,9 +59,12 @@ public class AgentRestaurant extends Agent {
                         placesLibres--;  // Decrease available seats after reservation
                         reply.setPerformative(ACLMessage.AGREE);  // Accept reservation
                         reply.setContent("Reservation successful");  // Optional content for further feedback
+                        System.out.println("Reservation successful at "+getLocalName());
                     } else {
                         reply.setPerformative(ACLMessage.REFUSE);  // Reject reservation
                         reply.setContent("No available seats");  // Optional content for further feedback
+                        System.out.println("No available seats at "+getLocalName());
+
                     }
 
                     // Send the response back

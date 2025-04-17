@@ -4,7 +4,7 @@ import jade.wrapper.AgentContainer;
 import jade.wrapper.ControllerException;
 
 public class RestaurantContainer {
-    private static int numberOfRestaurants = 3 ;
+    private static int numberOfRestaurants = 4 ;
     public static void main(String[] args) {
         try {
 

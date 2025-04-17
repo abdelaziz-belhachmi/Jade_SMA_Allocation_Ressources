@@ -13,12 +13,12 @@ import java.util.*;
 
 public class AgentMediateur extends Agent {
 
-    private List<AID> listeRestaurants;  // List of Restaurant AIDs
+    private List<AID> listeRestaurants = null;  // List of Restaurant AIDs
     private Queue<Object> fileDemandes;  // Queue to handle incoming requests
 
     public AgentMediateur() {
         this.fileDemandes = new LinkedList<>();
-        this.listeRestaurants = new ArrayList<>(); // just initialize empty here
+//        this.listeRestaurants = new ArrayList<>(); // just initialize empty here
     }
 
     // Method to dynamically fetch all restaurant agents from the container by type
@@ -46,8 +46,11 @@ public class AgentMediateur extends Agent {
     }
 
     private boolean handleReservation(AID personneAgent) {
-        this.listeRestaurants = getRestaurantAgents(); // fetch latest list
+        boolean resSuccess = false;
 
+        if (this.listeRestaurants == null){
+            this.listeRestaurants = getRestaurantAgents(); // fetch latest list
+        }
         int numITR = 0;
         System.out.println(" i will start trying reserving in restos ");
 
@@ -56,11 +59,12 @@ public class AgentMediateur extends Agent {
             System.out.println("**" + numITR + "** trying reserving in resto : " + restaurant.getLocalName());
             if (requestRestaurantReservation(personneAgent, restaurant)) {
                 System.out.println("successful reservation");
-                return true;
+                resSuccess = true;
+                break;
             }
         }
 
-        return false;
+        return resSuccess;
     }
 
     private boolean requestRestaurantReservation(AID personneAgent, AID restaurant) {

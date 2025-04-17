@@ -74,6 +74,7 @@ public class AgentPersonne extends Agent {
                     tentatives++;  // Increment the attempt counter
 
                     if (reservationStatus){
+                        System.out.println("found reservation after "+tentatives+" tentatives");
                         break;
                     }
 //                    else {

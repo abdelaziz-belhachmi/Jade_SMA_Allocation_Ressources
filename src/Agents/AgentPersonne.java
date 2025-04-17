@@ -4,6 +4,10 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
 public class AgentPersonne extends Agent {
@@ -12,6 +16,7 @@ public class AgentPersonne extends Agent {
     private int tentatives;  // Number of attempts to make a reservation
     private String nom;  // The agent's name
     private String comportement;  // Behavior description
+    private AID agentStatistic;
 
     public AgentPersonne() throws InterruptedException {
         this.tentatives = 0;
@@ -48,13 +53,36 @@ public class AgentPersonne extends Agent {
         this.id = this.getAID();
         this.nom = this.getAID().getLocalName();
         System.out.println(this);
+//        try {
+//            this.agentStatistic = FindAgentStatistique();
+//        } catch (FIPAException e) {
+//            e.printStackTrace();
+//            System.out.println("Agent Statistique not found");
+//            throw new RuntimeException(e);
+//        }
+        do {
+            try {
+                this.agentStatistic = FindAgentStatistique();
+            } catch (FIPAException e) {
+                e.printStackTrace();
+                System.out.println("Agent Statistique not found, retrying...");
+            }
+
+            if (this.agentStatistic == null) {
+                try {
+                    Thread.sleep(1000); // wait 1 second before retrying
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+            }
+        } while (this.agentStatistic == null);
 
         // Add a behavior to send the reservation request and handle responses
         addBehaviour(new OneShotBehaviour() {
             @Override
             public void action() {
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -90,8 +118,28 @@ public class AgentPersonne extends Agent {
                     //
 
                 }
+
+                /* send statistics */
+
             }
         });
+    }
+
+    private AID FindAgentStatistique() throws FIPAException {
+        // Now search for ONE StatisticAgent
+        DFAgentDescription statTemplate = new DFAgentDescription();
+        ServiceDescription statSD = new ServiceDescription();
+        statSD.setType("StatisticAgent");
+        statTemplate.addServices(statSD);
+
+        DFAgentDescription[] statResult = DFService.search(this, statTemplate);
+        if (statResult.length > 0) {
+            AID statisticAgent = statResult[0].getName();
+            System.out.println("Found a statistic agent: " + statisticAgent.getLocalName());
+            return statisticAgent;
+        }else{
+            return null;
+        }
     }
 
     @Override

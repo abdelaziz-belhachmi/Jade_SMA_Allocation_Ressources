@@ -8,6 +8,10 @@ import jade.wrapper.ControllerException;
 
 public class StatistiqueContainer {
 
+    private static AgentContainer container;
+
+    private static AgentController ag;
+
     public static void main(String[] args) {
         try {
 
@@ -19,19 +23,10 @@ public class StatistiqueContainer {
             profile.setParameter(ProfileImpl.MAIN_HOST, "localhost");
             profile.setParameter(ProfileImpl.CONTAINER_NAME, "Statistique-Container");
 
-            AgentContainer ac = rt.createAgentContainer(profile);
+            container = rt.createAgentContainer(profile);
 
-            AgentController ag = ac.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{});
+            ag = container.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{});
             ag.start();
-
-
-            try {
-                Thread.sleep(100000);  // Sleep for 60000 ms before dying
-                ag.kill();
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
 
 
@@ -39,11 +34,21 @@ public class StatistiqueContainer {
             e.printStackTrace();
         }
 
-
-
-
-
     }
+
+
+    // 👇 Shutdown method
+    public static void shutdown() {
+        if (container != null) {
+            try {
+                ag.kill();
+                System.out.println("Statistique agent shut down successfully.");
+            } catch (ControllerException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
 
 }

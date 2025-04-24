@@ -3,9 +3,16 @@ package Containers;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.core.Runtime;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PersonneContainer {
+
+    private static AgentContainer container;
+    private static List<AgentController> ag = new ArrayList<>();
 
     private static int numberOfPersonnes = 9;
 
@@ -20,10 +27,11 @@ public class PersonneContainer {
             profile.setParameter(ProfileImpl.MAIN_HOST, "localhost");
             profile.setParameter(ProfileImpl.CONTAINER_NAME, "Personne-Container");
 
-            AgentContainer ac = rt.createAgentContainer(profile);
+            container = rt.createAgentContainer(profile);
 
             for (int i = 0; i < numberOfPersonnes; i++) {
-                ac.createNewAgent("Personne-"+i,"Agents.AgentPersonne",new Object[]{}).start();
+                ag.add(container.createNewAgent("Personne-"+i,"Agents.AgentPersonne",new Object[]{}));
+                ag.get(i).start();
             }
 
         //    agent.start();
@@ -33,5 +41,22 @@ public class PersonneContainer {
             e.printStackTrace();
         }
     }
+
+
+    // 👇 Shutdown method
+    public static void shutdown() {
+        if (container != null) {
+            try {
+                for (AgentController a: ag){
+                    a.kill();
+                }
+                System.out.println("ALL Personnes shut down successfully.");
+            } catch (ControllerException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
 }

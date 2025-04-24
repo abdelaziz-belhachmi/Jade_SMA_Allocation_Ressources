@@ -20,24 +20,49 @@ public class SMAInterface extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-//        launchContainer("Containers.Main");
 
-        Button startStatistique = new Button("Start Statistique");
-        Button startRestaurant = new Button("Start Restaurant Agents");
+        // === Start Buttons ===
+        Button startPersonne = new Button("Start Personne");
+        Button startRestaurant = new Button("Start Restaurant");
         Button startMediateur = new Button("Start Mediateur");
-        Button startPersonne = new Button("Start Personne Agents");
+        Button startStatistique = new Button("Start Statistique");
 
-        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
+        // === Kill Buttons ===
+        Button killPersonne = new Button("Kill Personne");
+        Button killRestaurant = new Button("Kill Restaurant");
+        Button killMediateur = new Button("Kill Mediateur");
+        Button killStatistique = new Button("Kill Statistique");
+
+        // === Start Actions ===
+        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
         startRestaurant.setOnAction(e -> launchContainer("Containers.RestaurantContainer"));
         startMediateur.setOnAction(e -> launchContainer("Containers.MediateurContainer"));
-        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
+        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
 
-        VBox buttons = new VBox(10, startPersonne, startRestaurant, startMediateur, startStatistique);
+        // === Kill Actions ===
+        killPersonne.setOnAction(e -> shutdownContainer("Containers.PersonneContainer"));
+        killRestaurant.setOnAction(e -> shutdownContainer("Containers.RestaurantContainer"));
+        killMediateur.setOnAction(e -> shutdownContainer("Containers.MediateurContainer"));
+        killStatistique.setOnAction(e -> shutdownContainer("Containers.StatistiqueContainer"));
+
+        // === Layout with GridPane ===
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setHgap(10);
+        grid.setVgap(10);
+
+        grid.addRow(0, startPersonne, killPersonne);
+        grid.addRow(1, startRestaurant, killRestaurant);
+        grid.addRow(2, startMediateur, killMediateur);
+        grid.addRow(3, startStatistique, killStatistique);
+
+        // === Text area ===
         statsArea.setEditable(false);
         statsArea.setPrefHeight(250);
 
+        // === Main layout ===
         BorderPane root = new BorderPane();
-        root.setTop(buttons);
+        root.setTop(grid);
         root.setCenter(statsArea);
         root.setPadding(new Insets(10));
 
@@ -47,6 +72,46 @@ public class SMAInterface extends Application {
         primaryStage.show();
     }
 
+
+    private void shutdownContainer(String className) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            clazz.getMethod("shutdown").invoke(null);  // Call static shutdown()
+            statsArea.appendText("Shutdown invoked for " + className + "\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            statsArea.appendText("Failed to shutdown: " + className + "\n");
+        }
+    }
+
+//    public void start(Stage primaryStage) {
+////        launchContainer("Containers.Main");
+//
+//        Button startStatistique = new Button("Start Statistique");
+//        Button startRestaurant = new Button("Start Restaurant Agents");
+//        Button startMediateur = new Button("Start Mediateur");
+//        Button startPersonne = new Button("Start Personne Agents");
+//
+//        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
+//        startRestaurant.setOnAction(e -> launchContainer("Containers.RestaurantContainer"));
+//        startMediateur.setOnAction(e -> launchContainer("Containers.MediateurContainer"));
+//        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
+//
+//        VBox buttons = new VBox(10, startPersonne, startRestaurant, startMediateur, startStatistique);
+//        statsArea.setEditable(false);
+//        statsArea.setPrefHeight(250);
+//
+//        BorderPane root = new BorderPane();
+//        root.setTop(buttons);
+//        root.setCenter(statsArea);
+//        root.setPadding(new Insets(10));
+//
+//        Scene scene = new Scene(root, 600, 400);
+//        primaryStage.setScene(scene);
+//        primaryStage.setTitle("SMA Multi-Agent Interface");
+//        primaryStage.show();
+//    }
+//
 
     private void launchContainer(String className) {
         try {

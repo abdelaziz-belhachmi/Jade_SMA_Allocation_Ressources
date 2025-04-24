@@ -22,16 +22,16 @@ public class SMAInterface extends Application {
     public void start(Stage primaryStage) {
 
         // === Start Buttons ===
-        Button startPersonne = new Button("Start Personne");
-        Button startRestaurant = new Button("Start Restaurant");
-        Button startMediateur = new Button("Start Mediateur");
-        Button startStatistique = new Button("Start Statistique");
+        Button startPersonne = new Button("Start Personne Container");
+        Button startRestaurant = new Button("Start Restaurant Container");
+        Button startMediateur = new Button("Start Mediateur Container");
+        Button startStatistique = new Button("Start Statistique Container");
 
-        // === Kill Buttons ===
-        Button killPersonne = new Button("Kill Personne");
-        Button killRestaurant = new Button("Kill Restaurant");
-        Button killMediateur = new Button("Kill Mediateur");
-        Button killStatistique = new Button("Kill Statistique");
+        // === Create Buttons ===
+        Button createAgentsPersonne = new Button("Create Agents Personnes");
+        Button createAgentsRestaurant = new Button("Create Agents Restaurant");
+        Button createAgentsMediateur = new Button("Create Agent Mediateur");
+        Button createAgentsStatistique = new Button("Create Agent Statistique");
 
         // === Start Actions ===
         startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
@@ -39,22 +39,22 @@ public class SMAInterface extends Application {
         startMediateur.setOnAction(e -> launchContainer("Containers.MediateurContainer"));
         startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
 
-        // === Kill Actions ===
-        killPersonne.setOnAction(e -> shutdownContainer("Containers.PersonneContainer"));
-        killRestaurant.setOnAction(e -> shutdownContainer("Containers.RestaurantContainer"));
-        killMediateur.setOnAction(e -> shutdownContainer("Containers.MediateurContainer"));
-        killStatistique.setOnAction(e -> shutdownContainer("Containers.StatistiqueContainer"));
+        // === Create Agent Actions ===
+        createAgentsPersonne.setOnAction(e -> CreateAgents("Containers.PersonneContainer"));
+        createAgentsRestaurant.setOnAction(e -> CreateAgents("Containers.RestaurantContainer"));
+        createAgentsMediateur.setOnAction(e -> CreateAgents("Containers.MediateurContainer"));
+        createAgentsStatistique.setOnAction(e -> CreateAgents("Containers.StatistiqueContainer"));
 
         // === Layout with GridPane ===
         GridPane grid = new GridPane();
         grid.setPadding(new Insets(10));
-        grid.setHgap(10);
+        grid.setHgap(80);
         grid.setVgap(10);
 
-        grid.addRow(0, startPersonne, killPersonne);
-        grid.addRow(1, startRestaurant, killRestaurant);
-        grid.addRow(2, startMediateur, killMediateur);
-        grid.addRow(3, startStatistique, killStatistique);
+        grid.addRow(0, startStatistique, createAgentsStatistique);
+        grid.addRow(1, startMediateur, createAgentsMediateur);
+        grid.addRow(2, startRestaurant, createAgentsRestaurant);
+        grid.addRow(3, startPersonne, createAgentsPersonne);
 
         // === Text area ===
         statsArea.setEditable(false);
@@ -73,14 +73,14 @@ public class SMAInterface extends Application {
     }
 
 
-    private void shutdownContainer(String className) {
+    private void CreateAgents(String className) {
         try {
             Class<?> clazz = Class.forName(className);
-            clazz.getMethod("shutdown").invoke(null);  // Call static shutdown()
-            statsArea.appendText("Shutdown invoked for " + className + "\n");
+            clazz.getMethod("startAgents").invoke(null);  // Call static startAgents()
+            statsArea.appendText("Staring agents of " + className + "\n");
         } catch (Exception e) {
             e.printStackTrace();
-            statsArea.appendText("Failed to shutdown: " + className + "\n");
+            statsArea.appendText("Failed to start agents: " + className + "\n");
         }
     }
 

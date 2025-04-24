@@ -5,6 +5,7 @@ import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
+import jade.wrapper.StaleProxyException;
 
 public class StatistiqueContainer {
 
@@ -13,28 +14,24 @@ public class StatistiqueContainer {
     private static AgentController ag;
 
     public static void main(String[] args) {
-        try {
 
-            // Créer une instance de la MV
-            Runtime rt = Runtime.instance();
-            // Pas de propriétés, ce n'et pas un main container, mais un profile !
-            ProfileImpl profile = new ProfileImpl(false);
-            // Le main container associé est déjà démarré sur localhost
-            profile.setParameter(ProfileImpl.MAIN_HOST, "localhost");
-            profile.setParameter(ProfileImpl.CONTAINER_NAME, "Statistique-Container");
+        // Créer une instance de la MV
+        Runtime rt = Runtime.instance();
+        // Pas de propriétés, ce n'et pas un main container, mais un profile !
+        ProfileImpl profile = new ProfileImpl(false);
+        // Le main container associé est déjà démarré sur localhost
+        profile.setParameter(ProfileImpl.MAIN_HOST, "localhost");
+        profile.setParameter(ProfileImpl.CONTAINER_NAME, "Statistique-Container");
 
-            container = rt.createAgentContainer(profile);
-
-            ag = container.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{});
-            ag.start();
-
-
-
-        } catch (ControllerException e) {
-            e.printStackTrace();
-        }
-
+        container = rt.createAgentContainer(profile);
     }
+
+
+    public static void startAgents() throws StaleProxyException {
+        if (container != null){
+        ag = container.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{});
+        ag.start();
+    }}
 
 
     // 👇 Shutdown method

@@ -1,6 +1,7 @@
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 
 public class StatistiqueContainer {
@@ -18,11 +19,28 @@ public class StatistiqueContainer {
 
             AgentContainer ac = rt.createAgentContainer(profile);
 
-            ac.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{}).start();
+            AgentController ag = ac.createNewAgent("Statistique","Agents.AgentStatistique",new Object[]{});
+            ag.start();
+
+
+            try {
+                Thread.sleep(60000);  // Sleep for 60000 ms before dying
+                ag.kill();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
 
         } catch (ControllerException e) {
             e.printStackTrace();
         }
+
+
+
+
+
     }
 
 

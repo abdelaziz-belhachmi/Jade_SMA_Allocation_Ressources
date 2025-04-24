@@ -120,6 +120,13 @@ public class AgentPersonne extends Agent {
                 }
 
                 /* send statistics */
+                ACLMessage statMsg = new ACLMessage(ACLMessage.INFORM);
+                statMsg.addReceiver(agentStatistic);
+                statMsg.setContent(nom + ":" + tentatives); // format: "Personne-1:3"
+                send(statMsg);
+                System.out.println("Stats sent to AgentStatistique: " + nom + " with " + tentatives + " tentatives.");
+
+
 
             }
         });

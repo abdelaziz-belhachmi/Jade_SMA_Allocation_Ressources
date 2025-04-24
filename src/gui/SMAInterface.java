@@ -34,6 +34,14 @@ public class SMAInterface extends Application {
         Button createAgentsMediateur = new Button("Create Agent Mediateur");
         Button createAgentsStatistique = new Button("Create Agent Statistique");
 
+
+//        Button startReservations = new Button("Start Reservations");
+//        Button GetStatistics = new Button("Get Statistics");
+//
+//        startReservations.setOnAction(e -> startReservation("Containers.PersonneContainer"));
+//        GetStatistics.setOnAction(e -> getStatistiques("Containers.StatistiqueContainer"));
+
+
         // === Start Actions ===
         startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
         startRestaurant.setOnAction(e -> launchContainer("Containers.RestaurantContainer"));

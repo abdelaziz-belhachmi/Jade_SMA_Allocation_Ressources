@@ -1,5 +1,6 @@
 package Agents;
 
+import Agents.DAO.keypairs;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -46,21 +47,17 @@ public class AgentMediateur extends Agent {
         return restaurantAIDs;
     }
 
-    private boolean handleReservation(AID personneAgent) {
-        boolean resSuccess = false;
+    private keypairs<String,Boolean> handleReservation(AID personneAgent) {
 
         if (this.listeRestaurants == null) {
             this.listeRestaurants = getRestaurantAgents(); // fetch latest list
         }
 
-        for (AID restaurant : listeRestaurants) {
-            if (requestRestaurantReservation(personneAgent, restaurant)) {
-                resSuccess = true;
-                break;
-            }
-        }
+        int randomIndex = new Random().nextInt(listeRestaurants.size());
+        AID randomRestaurant = listeRestaurants.get(randomIndex);
+        boolean reservationSuccess = requestRestaurantReservation(personneAgent, randomRestaurant);
 
-        return resSuccess;
+    return new keypairs<>(randomRestaurant.getLocalName(),reservationSuccess);
     }
 
     private boolean requestRestaurantReservation(AID personneAgent, AID restaurant) {
@@ -110,17 +107,19 @@ public class AgentMediateur extends Agent {
                         public void action() {
                             AID personneAgent = fileDemandes.poll();  // Fetch next request from the queue
                             if (personneAgent != null) {
-                                boolean reservationSuccess = handleReservation(personneAgent);
-                                System.out.println("Mediateur reservation status: " + reservationSuccess);
+                                keypairs<String,Boolean> kp = handleReservation(personneAgent);
+                                boolean reservationSuccess = kp.getValue();
+                                String RestoName = kp.getKey();
+                                System.out.println("Mediateur reservation status: " + reservationSuccess+" in restaurent :"+RestoName);
 
                                 ACLMessage reply = msg.createReply();
                                 if (reservationSuccess) {
                                     reply.setPerformative(ACLMessage.AGREE);
-                                    reply.setContent("Reservation confirmed");
+                                    reply.setContent(RestoName);
                                     send(reply);
                                 } else {
                                     reply.setPerformative(ACLMessage.REFUSE);
-                                    reply.setContent("Reservation failed");
+                                    reply.setContent(RestoName);
                                     send(reply);
                                 }
                             }

@@ -94,21 +94,19 @@ public class AgentPersonne extends Agent {
 
                     // Wait for the response
                     response = recevoirReponse();
-                    System.out.println("hello ? responce got is "+response.getPerformative());
+//                    System.out.println("hello -- responce got is "+response.getPerformative());
                     // After receiving the response, notify the Mediateur (if needed)
                     boolean reservationStatus = (response != null && response.getPerformative() == ACLMessage.AGREE);
-                    // notifierMediateur(reservationStatus);
 
                     tentatives++;  // Increment the attempt counter
 
                     if (reservationStatus){
-                        System.out.println("found reservation after "+tentatives+" tentatives");
+                        System.out.println("found reservation after "+tentatives+" tentatives AT RESTAURENT :"+response.getContent());
                         break;
                     }
-//                    else {
-//                        System.out.println(nom + " has made 3 reservation attempts. No further action will be taken.");
-//                        doDelete();  // Delete the agent after 3 attempts
-//                    }
+                    else {
+                        System.out.println(nom + " failed to make reservation. with restaurant :"+response.getContent());
+                    }
 
                     try {
                         Thread.sleep((int) ((Math.random() * (1000 - 500 + 1)) + 500));  // Sleep for 500 ms before retrying

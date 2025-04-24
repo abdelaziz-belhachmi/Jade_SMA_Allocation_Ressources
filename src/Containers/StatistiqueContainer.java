@@ -26,7 +26,7 @@ public class StatistiqueContainer {
 
 
             try {
-                Thread.sleep(60000);  // Sleep for 60000 ms before dying
+                Thread.sleep(100000);  // Sleep for 60000 ms before dying
                 ag.kill();
 
             } catch (InterruptedException e) {

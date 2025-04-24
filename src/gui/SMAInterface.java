@@ -82,31 +82,6 @@ public class SMAInterface extends Application {
         }
     }
 
-//    private void launchContainer(String className) {
-//        try {
-//            ProcessBuilder pb = new ProcessBuilder("java", className);
-//            pb.directory(new File("out/production/jade_sma_allocation_de_ressources")); // adjust to your output folder
-//            pb.redirectErrorStream(true);
-//            Process p = pb.start();
-//
-//            new Thread(() -> {
-//                try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-//                    String line;
-//                    while ((line = reader.readLine()) != null) {
-//                        System.out.println(line);
-//                        final String finalLine = line;
-//                        javafx.application.Platform.runLater(() -> statsArea.appendText(finalLine + "\n"));
-//                    }
-//                } catch (IOException ex) {
-//                    ex.printStackTrace();
-//                }
-//            }).start();
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public static void main(String[] args) {
 
         try {

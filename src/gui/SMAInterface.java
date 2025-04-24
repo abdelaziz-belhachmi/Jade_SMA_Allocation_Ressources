@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.*;
+import java.lang.reflect.Method;
 
 public class SMAInterface extends Application {
 
@@ -84,68 +85,21 @@ public class SMAInterface extends Application {
         }
     }
 
-//    public void start(Stage primaryStage) {
-////        launchContainer("Containers.Main");
-//
-//        Button startStatistique = new Button("Start Statistique");
-//        Button startRestaurant = new Button("Start Restaurant Agents");
-//        Button startMediateur = new Button("Start Mediateur");
-//        Button startPersonne = new Button("Start Personne Agents");
-//
-//        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
-//        startRestaurant.setOnAction(e -> launchContainer("Containers.RestaurantContainer"));
-//        startMediateur.setOnAction(e -> launchContainer("Containers.MediateurContainer"));
-//        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
-//
-//        VBox buttons = new VBox(10, startPersonne, startRestaurant, startMediateur, startStatistique);
-//        statsArea.setEditable(false);
-//        statsArea.setPrefHeight(250);
-//
-//        BorderPane root = new BorderPane();
-//        root.setTop(buttons);
-//        root.setCenter(statsArea);
-//        root.setPadding(new Insets(10));
-//
-//        Scene scene = new Scene(root, 600, 400);
-//        primaryStage.setScene(scene);
-//        primaryStage.setTitle("SMA Multi-Agent Interface");
-//        primaryStage.show();
-//    }
-//
-
     private void launchContainer(String className) {
         try {
-            String jadePath = "lib/jade.jar";
-            String compiledPath = "out/production/jade_sma_allocation_de_ressources";
-            String classpath = jadePath + ";" + compiledPath;  // Windows uses ';'
+            Class<?> clazz = Class.forName(className);
+            Method mainMethod = clazz.getMethod("main", String[].class);
 
-            ProcessBuilder pb = new ProcessBuilder(
-                    "java",
-                    "-cp", classpath,
-                    className
-            );
+            String[] args = new String[]{}; // or provide actual args if needed
+            mainMethod.invoke(null, (Object) args); // important: cast to Object!
 
-            pb.directory(new File(".")); // working directory: project root
-            pb.redirectErrorStream(true);
-            Process p = pb.start();
-
-            new Thread(() -> {
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        System.out.println(line);
-                        final String finalLine = line;
-                        javafx.application.Platform.runLater(() -> statsArea.appendText(finalLine + "\n"));
-                    }
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }).start();
-
-        } catch (IOException e) {
+            statsArea.appendText("Launched container: " + className + "\n");
+        } catch (Exception e) {
             e.printStackTrace();
+            statsArea.appendText("Failed to launch container: " + className + "\n");
         }
     }
+
 
     public static void main(String[] args) {
 

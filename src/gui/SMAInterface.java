@@ -1,5 +1,11 @@
 package gui;
 
+import jade.core.Profile;
+import jade.core.ProfileImpl;
+import jade.core.Runtime;
+import jade.util.ExtendedProperties;
+import jade.util.leap.Properties;
+import jade.wrapper.AgentContainer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -14,15 +20,17 @@ public class SMAInterface extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+//        launchContainer("Containers.Main");
+
         Button startStatistique = new Button("Start Statistique");
         Button startRestaurant = new Button("Start Restaurant Agents");
         Button startMediateur = new Button("Start Mediateur");
         Button startPersonne = new Button("Start Personne Agents");
 
-        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
+        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
         startRestaurant.setOnAction(e -> launchContainer("Containers.RestaurantContainer"));
         startMediateur.setOnAction(e -> launchContainer("Containers.MediateurContainer"));
-        startStatistique.setOnAction(e -> launchContainer("Containers.StatistiqueContainer"));
+        startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
 
         VBox buttons = new VBox(10, startPersonne, startRestaurant, startMediateur, startStatistique);
         statsArea.setEditable(false);
@@ -42,7 +50,7 @@ public class SMAInterface extends Application {
     private void launchContainer(String className) {
         try {
             ProcessBuilder pb = new ProcessBuilder("java", className);
-            pb.directory(new File("out/production/SMAProject")); // adjust to your output folder
+            pb.directory(new File("out")); // adjust to your output folder
             pb.redirectErrorStream(true);
             Process p = pb.start();
 
@@ -65,6 +73,23 @@ public class SMAInterface extends Application {
     }
 
     public static void main(String[] args) {
+
+        try {
+            Runtime rt = Runtime.instance();
+
+            Properties prop = new ExtendedProperties();
+            prop.setProperty(Profile.GUI,"true");
+
+            Profile profile = new ProfileImpl(prop);
+            AgentContainer mainContainer = rt.createMainContainer(profile);
+
+            mainContainer.start();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
         launch(args);
     }
 }

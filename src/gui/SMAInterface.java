@@ -1,5 +1,6 @@
 package gui;
 
+import Agents.DAO.trio;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
@@ -14,6 +15,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class SMAInterface extends Application {
 
@@ -36,11 +38,29 @@ public class SMAInterface extends Application {
 
 
 //        Button startReservations = new Button("Start Reservations");
-//        Button GetStatistics = new Button("Get Statistics");
+        Button getStatistics = new Button("Get Statistics");
 //
 //        startReservations.setOnAction(e -> startReservation("Containers.PersonneContainer"));
-//        GetStatistics.setOnAction(e -> getStatistiques("Containers.StatistiqueContainer"));
+//        GetStatistics.setOnAction(e -> getStats("Containers.StatistiqueContainer"));
 
+        getStatistics.setOnAction(e -> {
+            try {
+                Class<?> clazz = Class.forName("Containers.StatistiqueContainer");
+                java.lang.reflect.Method m = clazz.getMethod("fetchStats");
+                List<Agents.DAO.trio<String, String, Integer>> stats =
+                        (List<trio<String, String, Integer>>) m.invoke(null);
+
+                statsArea.clear();
+                for (Agents.DAO.trio<String, String, Integer> stat : stats) {
+                    statsArea.appendText("Agent: " + stat.getA() +
+                            ", Restaurant: " + stat.getB() +
+                            ", Tentatives: " + stat.getC() + "\n");
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                statsArea.appendText("Erreur lors de la récupération des statistiques.\n");
+            }
+        });
 
         // === Start Actions ===
         startPersonne.setOnAction(e -> launchContainer("Containers.PersonneContainer"));
@@ -64,6 +84,7 @@ public class SMAInterface extends Application {
         grid.addRow(1, startMediateur, createAgentsMediateur);
         grid.addRow(2, startRestaurant, createAgentsRestaurant);
         grid.addRow(3, startPersonne, createAgentsPersonne);
+        grid.addRow(4, getStatistics);  // Ajoute à la ligne 4
 
         // === Text area ===
         statsArea.setEditable(false);
@@ -92,6 +113,8 @@ public class SMAInterface extends Application {
             statsArea.appendText("Failed to start agents: " + className + "\n");
         }
     }
+
+
 
     private void launchContainer(String className) {
         try {

@@ -1,11 +1,15 @@
 package Containers;
 
+import Agents.DAO.trio;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class StatistiqueContainer {
 
@@ -26,6 +30,14 @@ public class StatistiqueContainer {
         container = rt.createAgentContainer(profile);
     }
 
+    public static List<Agents.DAO.trio<String, String, Integer>> fetchStats() {
+        if (Agents.AgentStatistique.getInstance() != null) {
+            return Agents.AgentStatistique.getInstance().getStats();
+        } else {
+            System.out.println("AgentStatistique instance is null.");
+            return new ArrayList<>();
+        }
+    }
 
     public static void startAgents() throws StaleProxyException {
         if (container != null){

@@ -1,5 +1,6 @@
 package Agents;
 
+import Agents.DAO.trio;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -8,21 +9,36 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-public class AgentStatistique extends Agent {
+public class AgentStatistique extends Agent implements IStatistique {
 
     private int totalMessages;
     private int totalFailed;
-    private HashMap<String, Integer> statsAgents;
+    // Agent persone name , restaut of successfull reservation , number of tentatives
+    private List<trio<String,String,Integer>> statsAgents;
+
+    private static AgentStatistique instance;
+
+    public static AgentStatistique getInstance() {
+        return instance;
+    }
 
     @Override
     protected void setup() {
+
+//        setEnabledO2AInterface(true, 0);
+        registerO2AInterface(IStatistique.class, this);
+
+
         System.out.println("Hello! My name is " + getLocalName());
 
         this.totalMessages = 0;
         this.totalFailed = 0;
-        this.statsAgents = new HashMap<>();
+        this.statsAgents = new ArrayList<>();
+        instance = this;
 
         // Register in the DF
         try {
@@ -51,35 +67,34 @@ public class AgentStatistique extends Agent {
                 if (msg != null) {
                     if (msg.getPerformative() == ACLMessage.INFORM) {
                         String[] parts = msg.getContent().split(":");
-                        if (parts.length == 2) {
+                        if (parts.length == 3) {
                             String agentName = parts[0];
+                            String restoName = parts[1];
                             try {
                                 int attempts = Integer.parseInt(parts[1]);
-                                statsAgents.put(agentName, attempts);
-                                totalMessages++;
+                                statsAgents.add(new trio<>(agentName, restoName, attempts));
+//                                totalMessages++;
                                 System.out.println("Received stats from " + agentName + " | Attempts: " + attempts);
                             } catch (NumberFormatException e) {
-                                System.out.println("Invalid attempt number in message: " + msg.getContent());
-                                totalFailed++;
+                                System.out.println("NumberFormatException : " + msg.getContent());
+//                                totalFailed++;
                             }
                         } else {
                             System.out.println("Invalid stats message format: " + msg.getContent());
-                            totalFailed++;
+//                            totalFailed++;
                         }
                     }
-                    // Optional: Respond to get-stats request from a JavaFX interface agent
-                    else if (msg.getPerformative() == ACLMessage.REQUEST && msg.getContent().equals("get-stats")) {
-                        ACLMessage reply = msg.createReply();
-                        reply.setPerformative(ACLMessage.INFORM);
-                        reply.setContent(statsAgents.toString());
-                        send(reply);
-                        System.out.println("Stats sent to " + msg.getSender().getLocalName());
-                    }
+
                 } else {
                     block();
                 }
             }
         });
+    }
+
+    @Override
+    public List<trio<String,String,Integer>> getStats(){
+        return this.statsAgents;
     }
 
     @Override

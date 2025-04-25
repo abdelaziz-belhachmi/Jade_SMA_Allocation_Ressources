@@ -1,4 +1,4 @@
-# jade_sma_allocation_de_ressources
+# Jade SMA Allocation Ressources
 
 ### Contexte du projet :
 Un groupe de N personnes (agents) souhaite aller dîner dans M restaurants, chacun ayant une capacité

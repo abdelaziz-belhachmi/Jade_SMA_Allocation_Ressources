@@ -71,7 +71,7 @@ public class AgentStatistique extends Agent implements IStatistique {
                             String agentName = parts[0];
                             String restoName = parts[1];
                             try {
-                                int attempts = Integer.parseInt(parts[1]);
+                                int attempts = Integer.parseInt(parts[2]);
                                 statsAgents.add(new trio<>(agentName, restoName, attempts));
 //                                totalMessages++;
                                 System.out.println("Received stats from " + agentName + " | Attempts: " + attempts);

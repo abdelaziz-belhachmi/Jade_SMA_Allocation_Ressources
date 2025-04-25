@@ -37,11 +37,22 @@ public class SMAInterface extends Application {
         Button createAgentsStatistique = new Button("Create Agent Statistique");
 
 
-//        Button startReservations = new Button("Start Reservations");
         Button getStatistics = new Button("Get Statistics");
 //
-//        startReservations.setOnAction(e -> startReservation("Containers.PersonneContainer"));
-//        GetStatistics.setOnAction(e -> getStats("Containers.StatistiqueContainer"));
+
+        Button startReservations = new Button("Start Reservations");
+        startReservations.setOnAction(e -> {
+            try {
+                Class<?> clazz = Class.forName("Containers.PersonneContainer");
+                java.lang.reflect.Method m = clazz.getMethod("triggerReservations");
+                m.invoke(null);
+                statsArea.appendText("Reservations triggered via GUI\n");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                statsArea.appendText("Error during reservation trigger.\n");
+            }
+        });
+
 
         getStatistics.setOnAction(e -> {
             try {
@@ -84,7 +95,7 @@ public class SMAInterface extends Application {
         grid.addRow(1, startMediateur, createAgentsMediateur);
         grid.addRow(2, startRestaurant, createAgentsRestaurant);
         grid.addRow(3, startPersonne, createAgentsPersonne);
-        grid.addRow(4, getStatistics);  // Ajoute à la ligne 4
+        grid.addRow(4, startReservations, getStatistics);
 
         // === Text area ===
         statsArea.setEditable(false);

@@ -1,5 +1,6 @@
 package Containers;
 
+import Agents.AgentPersonne;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentContainer;
 import jade.core.Runtime;
@@ -44,6 +45,20 @@ public class PersonneContainer {
         }
         }
     }
+
+
+    public static void triggerReservations() {
+        for (int i = 0; i < numberOfPersonnes; i++) {
+            String name = "Personne-" + i;
+            AgentPersonne instance = Agents.AgentPersonne.getInstance(name);
+            if (instance != null) {
+                instance.startReservation();
+            } else {
+                System.out.println("AgentPersonne instance for " + name + " is null.");
+            }
+        }
+    }
+
 
     // 👇 Shutdown method
     public static void shutdown() {

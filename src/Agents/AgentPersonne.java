@@ -17,11 +17,53 @@ public class AgentPersonne extends Agent {
     private String nom;  // The agent's name
     private String comportement;  // Behavior description
     private AID agentStatistic;
+    private static final java.util.Map<String, AgentPersonne> instances = new java.util.HashMap<>();
+
+    public static AgentPersonne getInstance(String name) {
+        return instances.get(name);
+    }
 
     public AgentPersonne() throws InterruptedException {
         this.tentatives = 0;
         this.comportement = "Demande de reservation";
     }
+
+
+    public void startReservation() {
+        addBehaviour(new OneShotBehaviour() {
+            @Override
+            public void action() {
+                ACLMessage response = null;
+
+                while (response == null || response.getPerformative() == ACLMessage.REFUSE) {
+                    envoyerDemande();
+                    response = recevoirReponse();
+                    boolean success = response != null && response.getPerformative() == ACLMessage.AGREE;
+                    tentatives++;
+
+                    if (success) {
+                        System.out.println(nom + " reserved after " + tentatives + " attempts at " + response.getContent());
+                        break;
+                    } else {
+                        System.out.println(nom + " failed at restaurant: " + response.getContent());
+                    }
+
+                    try {
+                        Thread.sleep((int) ((Math.random() * (1000 - 500 + 1)) + 500));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                ACLMessage statMsg = new ACLMessage(ACLMessage.INFORM);
+                statMsg.addReceiver(agentStatistic);
+                statMsg.setContent(nom + ":" + response.getContent() + ":" + tentatives);
+                send(statMsg);
+                System.out.println("Stats sent: " + nom + " with " + tentatives + " attempts.");
+            }
+        });
+    }
+
 
     // Method to send the reservation request to the Mediateur agent
     public void envoyerDemande() {
@@ -47,6 +89,7 @@ public class AgentPersonne extends Agent {
         send(msg);
         System.out.println(nom + " has notified the Mediateur about the reservation status.");
     }
+
 
     @Override
     protected void setup() {
@@ -78,54 +121,57 @@ public class AgentPersonne extends Agent {
         } while (this.agentStatistic == null);
 
         // Add a behavior to send the reservation request and handle responses
-        addBehaviour(new OneShotBehaviour() {
-            @Override
-            public void action() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+//        addBehaviour(new OneShotBehaviour() {
+//            @Override
+//            public void action() {
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//
+//                ACLMessage response = null;
+//                // Simulate trying to send a reservation request after some number of attempts
+//                while (response == null || response.getPerformative() == ACLMessage.REFUSE) {  // Limit the number of attempts
+//                    envoyerDemande();  // Send the request
+//
+//                    // Wait for the response
+//                    response = recevoirReponse();
+////                    System.out.println("hello -- responce got is "+response.getPerformative());
+//                    // After receiving the response, notify the Mediateur (if needed)
+//                    boolean reservationStatus = (response != null && response.getPerformative() == ACLMessage.AGREE);
+//
+//                    tentatives++;  // Increment the attempt counter
+//
+//                    if (reservationStatus){
+//                        System.out.println("found reservation after "+tentatives+" tentatives AT RESTAURENT :"+response.getContent());
+//                        break;
+//                    }
+//                    else {
+//                        System.out.println(nom + " failed to make reservation. with restaurant :"+response.getContent());
+//                    }
+//
+//                    try {
+//                        Thread.sleep((int) ((Math.random() * (1000 - 500 + 1)) + 500));  // Sleep for 500 ms before retrying
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    //
+//
+//                }
+//
+//                /* send statistics */
+//                ACLMessage statMsg = new ACLMessage(ACLMessage.INFORM);
+//                statMsg.addReceiver(agentStatistic);
+//                statMsg.setContent(nom + ":" +response.getContent()+ ":" + tentatives); // format: "Personne-1:3"
+//                send(statMsg);
+//                System.out.println("Stats sent to AgentStatistique: " + nom + " with " + tentatives + " tentatives.");
+//
+//            }
+//        });
 
-                ACLMessage response = null;
-                // Simulate trying to send a reservation request after some number of attempts
-                while (response == null || response.getPerformative() == ACLMessage.REFUSE) {  // Limit the number of attempts
-                    envoyerDemande();  // Send the request
+        instances.put(getLocalName(), this);
 
-                    // Wait for the response
-                    response = recevoirReponse();
-//                    System.out.println("hello -- responce got is "+response.getPerformative());
-                    // After receiving the response, notify the Mediateur (if needed)
-                    boolean reservationStatus = (response != null && response.getPerformative() == ACLMessage.AGREE);
-
-                    tentatives++;  // Increment the attempt counter
-
-                    if (reservationStatus){
-                        System.out.println("found reservation after "+tentatives+" tentatives AT RESTAURENT :"+response.getContent());
-                        break;
-                    }
-                    else {
-                        System.out.println(nom + " failed to make reservation. with restaurant :"+response.getContent());
-                    }
-
-                    try {
-                        Thread.sleep((int) ((Math.random() * (1000 - 500 + 1)) + 500));  // Sleep for 500 ms before retrying
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    //
-
-                }
-
-                /* send statistics */
-                ACLMessage statMsg = new ACLMessage(ACLMessage.INFORM);
-                statMsg.addReceiver(agentStatistic);
-                statMsg.setContent(nom + ":" +response.getContent()+ ":" + tentatives); // format: "Personne-1:3"
-                send(statMsg);
-                System.out.println("Stats sent to AgentStatistique: " + nom + " with " + tentatives + " tentatives.");
-
-            }
-        });
     }
 
     private AID FindAgentStatistique() throws FIPAException {

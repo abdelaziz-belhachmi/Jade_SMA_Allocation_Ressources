@@ -1,0 +1,73 @@
+/* Style pour les séries du graphique linéaire */
+.chart-series-line {
+    -fx-stroke-width: 3px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);
+}
+
+/* Style pour la série de réservations */
+.chart-series-line.series0 {
+    -fx-stroke: #ff6384;
+}
+
+/* Style pour la série d'activité des agents */
+.chart-series-line.series1 {
+    -fx-stroke: #36a2eb;
+}
+
+/* Style pour tous les symboles/points de données */
+.chart-line-symbol {
+    -fx-background-color: #f8f9fa, #000000;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+}
+
+/* Style pour les symboles/points de la série de réservations */
+.chart-line-symbol.series0 {
+    -fx-background-color: #ff6384, white;
+}
+
+/* Style pour les symboles/points de la série d'activité des agents */
+.chart-line-symbol.series1 {
+    -fx-background-color: #36a2eb, white;
+}
+
+/* Style du texte de légende */
+.chart-legend-item {
+    -fx-font-size: 14px;
+}
+
+/* Style de la grille du graphique */
+.chart-plot-background {
+    -fx-background-color: #f8f9fa;
+    -fx-background-opacity: 0.8;
+}
+
+/* Style des lignes de la grille */
+.chart-vertical-grid-lines {
+    -fx-stroke: #e9e9e9;
+    -fx-stroke-width: 1px;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #e9e9e9;
+    -fx-stroke-width: 1px;
+}
+
+/* Style du titre du graphique */
+.chart-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Style pour les axes */
+.axis {
+    -fx-tick-label-font-size: 12px;
+    -fx-tick-label-fill: #7f8c8d;
+}
+
+.axis-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+}

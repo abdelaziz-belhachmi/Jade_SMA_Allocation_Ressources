@@ -13,7 +13,10 @@ d’accueil Ci.
     • Mesurer les performances (nombre de messages échangés, taux de réussite, etc.).
     • Comparer différentes stratégies (aléatoire, intelligente, collaborative).
 
-## Video
+## Videos
+
+[![Watch the video](https://img.youtube.com/vi/placeholder/hqdefault.jpg)](assets/Interface_SMA.mp4)
+
 [Click to watch](assets/Capture_video_SMA.webm)
 
 

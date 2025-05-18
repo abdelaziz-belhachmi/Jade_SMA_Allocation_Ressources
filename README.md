@@ -12,3 +12,18 @@ d’accueil Ci.
     • Simuler plusieurs comportements d’agents pour voir comment ils trouvent un restaurant.
     • Mesurer les performances (nombre de messages échangés, taux de réussite, etc.).
     • Comparer différentes stratégies (aléatoire, intelligente, collaborative).
+
+## Video
+[Click to watch](assets/Capture_video_SMA.webm)
+
+
+## Screenshots
+
+### Dashboard View
+![Dashboard](assets/Dashboard%202%20.jpg)
+
+### Agent Management
+![Gestion Agents](assets/Gestion%20Agents.jpg)
+
+### Container Management
+![Gestion Containers](assets/Gestion%20Containers.jpg)
